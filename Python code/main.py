@@ -1,13 +1,16 @@
-from tkinter import *
-from tkinter import filedialog as dlg, messagebox as mbox
-import urllib.request
+from tkinter import * #Permite desenvolver interfaces gráficas
+from tkinter import filedialog as dlg, messagebox as mbox #Exibe caixas de diálogo de manipulação de arquivos
+import urllib.request  #Usado para abrir e ler URLs
+
 import cv2
 import numpy as np
-import sys
-import time
-import os
-import Processamento
 
+import sys #Funções voltadas principalmente para trabalhar com as "configurações" obtidas na execução atual de um script
+import time #Fornece várias funcionalidades relacionadas ao tempo
+import os #Funcionalidades que permitem ao programador acessar e manipular arquivos, pastas, executar comandos do sistema
+import Processamento #Importa o script 'processamento'
+
+# Variáveis globais
 # Lists to store the Lines coordinators
 elementLines = []
 calibrationLine = []
@@ -116,26 +119,33 @@ def captureImage(source):
 
 
 # Programa Principal
-if sys.version_info[0] == 3:
+if sys.version_info[0] == 3: #Verifica se a versão do python é a 3
     from urllib.request import urlopen
 else:
     from urllib.request import urlopen
 
-cv2.namedWindow("Window")  # Create a named window
-cv2.setMouseCallback("Window", mouseActions)  # highgui function called when mouse events occur
-fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(2)  # Read Images
+cv2.namedWindow("Window")  #Cria uma nova janeja
+
+#Highgui function called when mouse events occur
+#Permite a interação do Mouse na janela criada
+cv2.setMouseCallback("Window", mouseActions)
+
+#Lê a imagem e atribui valores aos devidos parâmetros
+fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(2)
 auxFactor = rFactor
 
+#Loop constante
 while True:
     # Display the image
     if videoMode == 1:
         fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(0)
 
-    image = originalImage.copy()
+    image = originalImage.copy() #Cópia da imagem lida na etapa anterior
+    #Utiliza a função drawLines do script Processamento
     image = Processamento.drawLines(image, calibrationLine, tempLines, elementLines, totalColumns, totalLines)
 
-    cv2.imshow("Window", image)
-    k = cv2.waitKey(1)
+    cv2.imshow("Window", image) #Display da imagem
+    k = cv2.waitKey(1) #Recebe um comando do teclado
 
     if (k == 113):  # 'q' pressed to quit the system
         break

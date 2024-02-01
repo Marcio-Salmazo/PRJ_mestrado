@@ -2,6 +2,7 @@ import cv2
 
 # function which will be called on mouse input
 def drawLines(action, x, y, flags, *userdata):
+
     # Referencing global variables
     global elementLines, tempLines, originalImage, clicked, totalLines, totalColumns
     # Mark the top left corner when left mouse button is pressed
