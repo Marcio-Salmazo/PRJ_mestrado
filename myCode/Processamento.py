@@ -97,67 +97,42 @@ def subImagens(elementos, img, tColumns, tLines, factor, pixFactor, dFactor, nom
 
         recImage = imgProcess[lIni:lFin, cIni:cFin]
 
-        # Daqui em diante eu acho que dá para ser paralelizado.....
 
+        # Daqui em diante eu acho que dá para ser paralelizado.....
         egg_num = str(nFile)
         resultado = process(recImage, 1, pixFactor)
 
+
         imgProc, a, b, c, d, v, area, pAi, pAf, pBi, pBf = resultado
-        cSEx = int(min(pAi[0], pAf[0], pBi[0], pBf[0]))
-        cSEy = int(min(pAi[1], pAf[1], pBi[1], pBf[1]))
 
-        cIDx = int(max(pAi[0], pAf[0], pBi[0], pBf[0]))
-        cIDy = int(max(pAi[1], pAf[1], pBi[1], pBf[1]))
-
-        rotateImage = recImage[cSEx: cIDx, cSEy: cIDy]
-
-        try:
-            termo1 = math.acos((b / 2) / (d)) * (d ** 2 / math.sqrt(d ** 2 - (b / 2) ** 2))
-            termo2 = math.acos((b / 2) / c) * (c ** 2 / math.sqrt(c ** 2 - (b / 2) ** 2))
-            vFormulaArea = 2 * math.pi * (b / 2) ** 2 + math.pi * (b / 2) * (termo1 + termo2)
-        except:
-            vFormulaArea = 1
-
-        try:
-            vFormulaVolume = (b / 2) ** 2 * ((2 * math.pi) / 3) * (d + c)
-        except:
-            vFormulaVolume = 1
 
         processedImageName = Path(processed_path, f'{nFile}.png')
-        rotateProcessedImageName = Path(processed_path, f'rotate_{nFile}.png')
+        #rotateProcessedImageName = Path(processed_path, f'rotate_{nFile}.png')
         nFile += 1
 
         cv2.imwrite(str(processedImageName), imgProc)
-        cv2.imwrite(str(rotateProcessedImageName), rotateImage)
+        #cv2.imwrite(str(rotateProcessedImageName), rotateImage)
 
         #imgProcess[linhas[x]:linhas[x + 1], colunas[y]:colunas[y + 1]] = imgProc
         imgProcess[lIni:lFin, cIni:cFin] = imgProc
 
         #entendo que aqui se encerra o trecho paralelizável....
+
         down_points = (tColumns, tLines)
         dispImage = cv2.resize(imgProcess, down_points, interpolation=cv2.INTER_LINEAR)
         cv2.imshow("Window", dispImage)
         cv2.waitKey(1)
 
-    recImage = imgProcess[lMin:lMax, cMin:cMax]
-    tLines, tColumns, x = adjustImageDimension(recImage)
-    down_points = (tColumns, tLines)
-    dispImage = cv2.resize(recImage, down_points, interpolation=cv2.INTER_LINEAR)
-
-    # nomeArquivo = rf'{__path_folder}/Processed/{__root_file_name}_processado.png'
-    recImageName = Path(processed_path, f'{file_path_results.stem}_processado.png')
-    salvou = cv2.imwrite(str(recImageName), recImage)
-
-
-
 
 def process(frame, factor, pixFactor):
+
 
     # Measures that will be returned
     A = 0
     B = 0
     C = 0
     D = 0
+
 
     # Create a copy to save the image at the original resolution.
     original = frame.copy()
@@ -215,10 +190,13 @@ def process(frame, factor, pixFactor):
     if not fl_find_bb:
         return [original, -1, -1, -1, -1]
 
+
     # Identifying the two points that form the longest straight line
     print('Identifying the two points that form the longest straight line')
     border_points = np.array(np.vstack(find_contours(data, 0.1)))
     index_size, _ = border_points.shape
+
+
     pt1 = pt2 = []
     max_distance = 0
     for i in range(1, index_size):
@@ -229,14 +207,6 @@ def process(frame, factor, pixFactor):
                 pt2 = border_points[j] * factor
                 max_distance = distance
 
-    '''
-    # Draw the line of these points on the original image
-    print('Draw the line of these points on the original image')
-    if len(pt1) > 0 and len(pt2) > 0:
-        original = cv2.line(original, (int(pt1[1]), int(pt1[0])), (int(pt2[1]), int(pt2[0])), (47, 141, 255),
-                            thickness=2)
-        A = max_distance
-    '''
 
     # Finds the angle of the line formed by the previous points and, later, finds the longest straight line
     print('Finds the angle of the line formed by the previous points and, later, finds the longest straight line')
@@ -307,12 +277,7 @@ def process(frame, factor, pixFactor):
             chosen_volume = poly_volume
             chosen_area = poly_eggArea
 
-    '''
-    # Draws the perpendicular line
-    if len(pt1) > 0 and len(pt2) > 0:
-        original = cv2.line(original, (int(pt3[1]), int(pt3[0])), (int(pt4[1]), int(pt4[0])), (0, 102, 0), thickness=2)
-        B = max_distance
-    '''
+
 
     # Finds the intersection of the lines and then draws the two sub-lines (Above and Below) of the perpendicular line
     inter = lineLineIntersection(pt1, pt2, pt3, pt4)
@@ -338,18 +303,6 @@ def process(frame, factor, pixFactor):
     B *= pixFactor
     C *= pixFactor
     D *= pixFactor
-
-    cv2.putText(original, 'A: ' + str("{:.3f}".format(A)), (original.shape[1] - 150, 30), cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, (47, 141, 255), 1)
-    cv2.putText(original, 'B: ' + str("{:.3f}".format(B)), (original.shape[1] - 150, 50), cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, (0, 102, 0), 1)
-    cv2.putText(original, 'C: ' + str("{:.3f}".format(C)), (original.shape[1] - 150, 70), cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, (0, 0, 255), 1)
-    cv2.putText(original, 'D: ' + str("{:.3f}".format(D)), (original.shape[1] - 150, 90), cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, (255, 255, 255), 1)
-    cv2.putText(original, 'V: ' + str("{:.3f}".format(chosen_volume)), (original.shape[1] - 150, 110),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.75, (30, 105, 210), 1)
 
     return [original, A, B, C, D, chosen_volume, chosen_area, pt1, pt2, pt3, pt4]
 
