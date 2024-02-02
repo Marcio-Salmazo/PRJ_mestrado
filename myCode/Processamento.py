@@ -1,13 +1,17 @@
 import os
 from pathlib import Path
 from tkinter import filedialog as dlg
+import numpy as np
 import cv2
+
 
 def check_and_create_directory_if_not_exist(path_directory):
     if not os.path.exists(path_directory):
         os.makedirs(path_directory)
         print(f"The path {path_directory} is created!")
 
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 def findeggs(originalImg):
     ovos = []
@@ -71,7 +75,7 @@ def findeggs(originalImg):
     return ovos
 
 
-# -----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 def subImagens(img, nomeArquivo):
     imgProcess = img.copy()
@@ -124,8 +128,30 @@ def subImagens(img, nomeArquivo):
         if cFin > cMax: cMax = cFin
 
         recImage = imgProcess[lIni:lFin, cIni:cFin]
+        standardResult = stdImage(recImage)
+
         egg_num = str(nFile)
         processedImageName = Path(processed_path, f'{nFile}.png')
         nFile += 1
 
-        cv2.imwrite(str(processedImageName), recImage)
+        cv2.imwrite(str(processedImageName), standardResult)
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+def stdImage(image):
+    imgGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    imArray = np.zeros((512, 512), dtype=int)
+
+    # Search for image dimensions
+    hImg, wImg, ch = image.shape
+    hArr, wArr = imArray.shape
+
+    # Compute xoff and yoff for placement of upper left corner of resized image
+    yoff = round((hArr - hImg) / 2)
+    xoff = round((wArr - wImg) / 2)
+
+    # Use numpy indexing to place the resized image in the center of background image
+    imArray[yoff:yoff + hImg, xoff:xoff + wImg] = imgGray
+
+    return imArray
