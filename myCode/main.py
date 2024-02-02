@@ -5,9 +5,6 @@ import Processamento
 
 # globals
 elementLines = []
-totalLines = 0
-totalColumns = 0
-pixFactor = 0.247525
 dFactor = 1
 videoMode = -1
 
@@ -32,6 +29,7 @@ def capture_distance():
 
 
 def captureImage(source):
+    global fullImage
     fileName = ''
     if source == 1:
         fileName = dlg.askopenfilename()
@@ -41,21 +39,16 @@ def captureImage(source):
     elif source == 2:
         fullImage = cv2.imread('egg_measure.jpeg')
 
-    # Adjust full image to fit on screem
-    totalLines, totalColumns, rFactor = Processamento.adjustImageDimension(fullImage)
-    down_points = (totalColumns, totalLines)
-    originalImage = cv2.resize(fullImage, down_points, interpolation=cv2.INTER_LINEAR)
-
-    return fullImage, originalImage, totalLines, totalColumns, rFactor, fileName
+    return fullImage, fileName
 
 
 # -----------------------------------------------------------------------------------------------------------------------
 
 
-fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(2)
+fullImage, nomeArquivo = captureImage(2)
 
 while True:
-    image = originalImage.copy()
+    image = fullImage.copy()
     cv2.imshow("Window", image)
     k = cv2.waitKey(1)
 
@@ -66,10 +59,10 @@ while True:
         pixFactor = 0.25041736227045075125208681135225
         print("Nome Arquivo antes da chamada de processamento ==> ", nomeArquivo)
 
-        Processamento.subImagens(fullImage, totalColumns, totalLines, pixFactor, nomeArquivo)
-        fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(1)
+        Processamento.subImagens(fullImage, nomeArquivo)
+        fullImage, nomeArquivo = captureImage(1)
 
     if k == 102:  # 'f' to read image from file
-        fullImage, originalImage, totalLines, totalColumns, rFactor, nomeArquivo = captureImage(1)
+        fullImage, nomeArquivo = captureImage(1)
 
 cv2.destroyAllWindows()
