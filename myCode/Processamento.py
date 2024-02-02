@@ -154,4 +154,7 @@ def stdImage(image):
     # Use numpy indexing to place the resized image in the center of background image
     imArray[yoff:yoff + hImg, xoff:xoff + wImg] = imgGray
 
-    return imArray
+    imArray = imArray.astype("uint8")
+    ret, th2 = cv2.threshold(imArray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    return th2
