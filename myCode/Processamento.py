@@ -155,6 +155,13 @@ def stdImage(image):
     imArray[yoff:yoff + hImg, xoff:xoff + wImg] = imgGray
 
     imArray = imArray.astype("uint8")
-    ret, th2 = cv2.threshold(imArray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    for i in range(0, wArr):
+        for j in range(0, hArr):
+            if imArray[i][j] <= 130:
+                imArray[i][j] = 0
 
-    return th2
+    final = cv2.medianBlur(imArray, 3)
+
+    # ret, th2 = cv2.threshold(imArray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    return final
