@@ -3,6 +3,7 @@ from pathlib import Path
 from tkinter import filedialog as dlg
 import numpy as np
 import cv2
+from rembg import remove
 
 
 def check_and_create_directory_if_not_exist(path_directory):
@@ -140,7 +141,12 @@ def subImagens(img, nomeArquivo):
 # ----------------------------------------------------------------------------------------------------------------------
 
 def stdImage(image):
-    imgGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Removing background
+    imgNBG = remove(image)
+    # ----------------
+
+    imgGray = cv2.cvtColor(imgNBG, cv2.COLOR_BGR2GRAY)
     imArray = np.zeros((512, 512), dtype=int)
 
     # Search for image dimensions
@@ -153,15 +159,16 @@ def stdImage(image):
 
     # Use numpy indexing to place the resized image in the center of background image
     imArray[yoff:yoff + hImg, xoff:xoff + wImg] = imgGray
-
     imArray = imArray.astype("uint8")
+
+    #ret, th2 = cv2.threshold(imArray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    '''
     for i in range(0, wArr):
         for j in range(0, hArr):
             if imArray[i][j] <= 130:
                 imArray[i][j] = 0
 
     final = cv2.medianBlur(imArray, 3)
+    '''
 
-    # ret, th2 = cv2.threshold(imArray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    return final
+    return imArray
