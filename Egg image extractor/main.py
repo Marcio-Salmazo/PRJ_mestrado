@@ -50,7 +50,8 @@ fullImage, nomeArquivo = captureImage(2)
 
 while True:
     image = fullImage.copy()
-    cv2.imshow("Startup Menu", image)
+    resize = cv2.resize(image, (960, 540))
+    cv2.imshow("Startup Menu", resize)
     k = cv2.waitKey(1)
 
     if k == 113 or k == 81:  # 'q' pressed to quit the system

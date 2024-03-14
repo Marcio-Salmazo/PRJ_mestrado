@@ -88,26 +88,24 @@ def subImagens(img, nomeArquivo):
     results_folder_path = Path(os.getcwd(), 'results')  # Retorna se há o diretório necessário
     check_and_create_directory_if_not_exist(results_folder_path)  # Cria um novo diretório caso não exista
 
+    '''
     while proceed == False:
 
-        if nomeArquivo == '':
+         if nomeArquivo == '':
             # Pede ao usuário um nome de arquivo para ser salvo, e retorna o caminho para ele
             new_file_name = dlg.asksaveasfilename(confirmoverwrite=False, initialdir=results_folder_path)
             # Atribui o caminho
             __path_file_name = Path(new_file_name)
-        else:
+         else:
             __path_file_name = Path(nomeArquivo)
 
-        # Check whether the specified path exists or not
-        print('Check whether the specified path exists or not')
-        file_path_results = Path(results_folder_path, __path_file_name.stem)
-        check_and_create_directory_if_not_exist(file_path_results)
-
-        # processed_path = Path(__path_file_name.parent, 'processed')
-        processed_path = Path(file_path_results, 'processed')
-        check_and_create_directory_if_not_exist(processed_path)
-
-        proceed = True
+         # Check whether the specified path exists or not
+         print('Check whether the specified path exists or not')
+         file_path_results = Path(results_folder_path, __path_file_name.stem)
+         check_and_create_directory_if_not_exist(file_path_results)
+        
+    proceed = True
+    '''
 
     posEggs = findeggs(img)
     nFile = 1
@@ -131,8 +129,11 @@ def subImagens(img, nomeArquivo):
         recImage = imgProcess[lIni:lFin, cIni:cFin]
         standardResult = stdImage(recImage)
 
+        fileName = Path(nomeArquivo).stem
+        tray = fileName[1]
+
         egg_num = str(nFile)
-        processedImageName = Path(processed_path, f'{nFile}.png')
+        processedImageName = Path(results_folder_path, f'B{tray}E{nFile}.png')
         nFile += 1
 
         cv2.imwrite(str(processedImageName), standardResult)
