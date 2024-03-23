@@ -50,7 +50,7 @@ fullImage, nomeArquivo = captureImage(2)
 
 while True:
     image = fullImage.copy()
-    resize = cv2.resize(image, (960, 540))
+    resize = cv2.resize(image, (854, 480))
     cv2.imshow("Startup Menu", resize)
     k = cv2.waitKey(1)
 
@@ -66,5 +66,6 @@ while True:
 
     if k == 102 or k == 70:  # 'f' to read image from file
         fullImage, nomeArquivo = captureImage(1)
+        #fullImage = cv2.resize(fullImage, (1280, 720))
 
 cv2.destroyAllWindows()

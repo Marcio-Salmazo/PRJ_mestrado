@@ -27,6 +27,36 @@ def findeggs(originalImg):
     analysis = cv2.connectedComponentsWithStats(threshold, 4, cv2.CV_32S)
     (totalLabels, label_ids, values, centroid) = analysis
 
+    '''
+        Anotações sobre a função cv2.connectedComponentsWithStats()
+        Essa função é usada para realizar a segmentação de imagem por componentes 
+        conectados e também para calcular estatísticas sobre esses componentes.
+        
+        cv::connectedComponentsWithStats (InputArray image, 
+                                            OutputArray labels, 
+                                            OutputArray stats, 
+                                            OutputArray centroids, 
+                                            int connectivity=8, 
+                                            int ltype=CV_32S)
+                                        
+        cv2.connectedComponentsWithStats(threshold,      -> IMAGEM SEGMENTADA
+                                            4,           -> CONECTIVIDADE ENTRE PIXELS VIZINHANÇA 4
+                                            cv2.CV_32S)  -> TIPO DE DADOS QUE DEFINE A ETIQUETA DE SAÍDA
+                                            
+        Saída da função:
+        * labels: Uma matriz com a mesma forma da imagem de entrada, onde cada pixel é 
+          rotulado com um número inteiro que indica a qual componente conectado ele pertence. 
+          Pixels com a mesma etiqueta fazem parte do mesmo componente conectado.
+        
+        * stats: Uma matriz que contém estatísticas sobre cada componente conectado encontrado na imagem. 
+          Cada linha desta matriz representa um componente conectado e as colunas contêm informações como 
+          a área, a posição do retângulo delimitador, etc.
+        
+        * centroids: Uma matriz que contém os centróides (coordenadas x, y) de cada 
+        componente conectado encontrado na imagem.
+                                            
+    '''
+
     # Loop through each component
 
     for i in range(1, totalLabels):
@@ -35,7 +65,9 @@ def findeggs(originalImg):
         percArea = (area * 100) / AreaTotal
         aspectRatio = float(int(values[i, cv2.CC_STAT_HEIGHT]) / int(values[i, cv2.CC_STAT_WIDTH]))
 
-        if (percArea > 0.4) and (percArea < 1) and (aspectRatio > 1.1) and (aspectRatio < 1.6):
+        #print(percArea, '-', aspectRatio)
+
+        if (percArea > 0.3) and (percArea < 1) and (aspectRatio > 1.1) and (aspectRatio < 1.6):
             (col, lin) = centroid[i]
             x = values[i, cv2.CC_STAT_LEFT]
             y = values[i, cv2.CC_STAT_TOP]
@@ -80,7 +112,8 @@ def findeggs(originalImg):
 
 def subImagens(img, nomeArquivo):
     imgProcess = img.copy()
-    proceed = False
+
+
     global __path_file_name
     global egg_num
     global egg_folder_fit_plot_path
@@ -130,10 +163,10 @@ def subImagens(img, nomeArquivo):
         standardResult = stdImage(recImage)
 
         fileName = Path(nomeArquivo).stem
-        tray = fileName[1]
+        #tray = fileName[1]+'.'+fileName[4]
 
         egg_num = str(nFile)
-        processedImageName = Path(results_folder_path, f'B{tray}E{nFile}.png')
+        processedImageName = Path(results_folder_path, f'B{fileName} - Ovo{nFile}.png')
         nFile += 1
 
         cv2.imwrite(str(processedImageName), standardResult)
