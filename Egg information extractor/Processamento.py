@@ -109,7 +109,7 @@ def subImagens(elementos, img, tColumns, tLines, factor, pixFactor, dFactor, nom
 
     linhas = []
     colunas = []
-    '''
+
     for i in elementos:
         pos, n = i
         if n == 1:
@@ -118,7 +118,7 @@ def subImagens(elementos, img, tColumns, tLines, factor, pixFactor, dFactor, nom
             colunas.append(int(pos * (1 / factor)))
     linhas.sort()
     colunas.sort()
-    '''
+
 
     posEggs=findeggs(img)
     nFile = 1
@@ -559,7 +559,7 @@ def findeggs(originalImg):
         percArea = (area*100)/AreaTotal
         aspectRatio = float(int(values[i, cv2.CC_STAT_HEIGHT]) / int(values[i, cv2.CC_STAT_WIDTH]))
 
-        if (percArea > 0.4) and (percArea < 1) and (aspectRatio > 1.1) and (aspectRatio < 1.6):
+        if (percArea > 0.3) and (percArea < 1) and (aspectRatio > 1.1) and (aspectRatio < 1.6):
             (col, lin) = centroid[i]
             x = values[i, cv2.CC_STAT_LEFT]
             y = values[i, cv2.CC_STAT_TOP]
@@ -575,7 +575,7 @@ def findeggs(originalImg):
         if (ovos[i][0]==0):
             ovos[i][0]=grupo
             for k in range(i+1, len(ovos)):
-                if ((abs(ovos[k][1]-ovos[i][1])*100)/ovos[i][1])<20:
+                if ((abs(ovos[k][1]-ovos[i][1])*100)/ovos[i][1]) < 15:
                     ovos[k][0]=grupo
             grupo=grupo+1
 

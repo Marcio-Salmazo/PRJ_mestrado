@@ -157,7 +157,8 @@ while True:
         clicked = 0
 
     if (k == 112):  # 'p' pressed to activate the image processing
-        pixFactor = 0.25041736227045075125208681135225
+        #pixFactor = 0.25041736227045075125208681135225
+        pixFactor = 0.2509718780
         print("Nome Arquivo antes da chamada de processamento ==> ", nomeArquivo)
         Processamento.subImagens(elementLines, fullImage, totalColumns, totalLines, rFactor, pixFactor, dFactor, nomeArquivo)
         #cv2.namedWindow("Window")  # Create a named window
