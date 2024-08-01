@@ -25,6 +25,7 @@ from keras.layers import Dense, Flatten, Conv2D, MaxPooling2D, BatchNormalizatio
 from keras import layers, models, optimizers, losses
 from tensorflow.keras.callbacks import TensorBoard
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 import numpy as np
 import pandas as pd
@@ -32,6 +33,8 @@ import matplotlib.pyplot as plt
 import cv2 
 import os 
 import glob
+
+# FUNÇÕES RELACIONADAS A CONSTRUÇÃO DAS REDES NEURAIS
 
 def AlexNet(input_shape = (512, 512, 3), 
             dataTrain = None, 
@@ -103,7 +106,38 @@ def ShallowNet(input_shape = (512, 512, 3),
     model.fit(dataTrain, classTrain, batch_size = batch_size, epochs = epochs, validation_data = valData, callbacks=[board])
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------
-    
+
+def ShallowMLP(dataTrain = None, 
+               classTrain = None, 
+               batch_size = 32, 
+               epochs = 5, 
+               valData = None,
+               loss='binary_crossentropy', 
+               optimizer='adam', 
+               metrics=['accuracy']):
+        
+    model = Sequential([
+
+        Dense(64, input_dim=dataTrain.shape[1], activation='relu'),
+        Dropout(0.2),
+        Dense(32, activation='relu'),
+        Dropout(0.2),
+        Dense(16, activation='relu'),
+        Dropout(0.2),
+        Dense(8, activation='relu'),
+        Dense(1, activation='sigmoid')
+    ])
+
+    board = TensorBoard(log_dir='./logsShallowMLP')
+    model.compile(loss = loss, optimizer = optimizer, metrics = metrics)
+    model.fit(dataTrain, classTrain, batch_size = batch_size, epochs = epochs, validation_data = valData, callbacks=[board])
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------------------------------------------
+
+# FUNÇÕES RELACIONADAS AO TRATAMENTO DOS DADOS
+
 def getImages(ImagePath, csvPath):
 
     # Carregamento das imagens:
@@ -152,7 +186,7 @@ def dataSplit(data, cList, perc, norm = 0):
     classTrain = np.array(classTrain)
     classTest = np.array(classTest)
 
-    # Processo de normalização
+    # Processo de normalização de imagens
     if norm == 1:
 
         dataTrain = dataTrain.astype('float32')
@@ -163,6 +197,14 @@ def dataSplit(data, cList, perc, norm = 0):
 
         return dataTrain, dataTest, classTrain, classTest
         
+    elif norm == 2:
+        dataTrain = dataTrain.astype('float32')
+        dataTest = dataTest.astype('float32')
+
+        scalar = MinMaxScaler()
+        dataTrain = scalar.fit_transform(dataTrain)
+        dataTest = scalar.fit_transform(dataTest)
+
     else:
 
         return dataTrain, dataTest, classTrain, classTest
