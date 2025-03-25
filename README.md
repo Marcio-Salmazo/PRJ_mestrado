@@ -58,7 +58,9 @@ Sendo:
 ✅ Datasets - Contém dados extraídos das imagens dos ovos (dimensões, peso, volume, etc) para análise no EXCEL ou WEKA 
 
 ✅ Egg processing - Contém os scripts em python voltados para: 
+
   1 - Extrair as imagens singulares dos ovos a partir da imagem da bandeja (Egg image extractor);  
+  
   2 - Extrair as informações referentes aos ovos a partir da imagem da bandeja (Egg information extractor)
   
 ✅ Image Dataset - Contém as imagens das bandejas e as imagens singulares de cada ovo 
